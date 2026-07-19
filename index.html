@@ -1,0 +1,1256 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Authenticator Pro - Mã OTP</title>
+    
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet" />
+    
+    <style>
+        :root {
+            --primary: #6C5CE7;
+            --primary-dark: #5A4BD1;
+            --primary-light: #A29BFE;
+            --secondary: #00CEC9;
+            --bg-gradient-start: #6C5CE7;
+            --bg-gradient-end: #A29BFE;
+            --card-shadow: 0 10px 40px rgba(108, 92, 231, 0.25);
+            --text-primary: #2D3436;
+            --text-secondary: #636E72;
+            --bg-card: #FFFFFF;
+            --bg-hover: #F8F9FA;
+            --border-radius: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+        }
+
+        /* Background decoration */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 40px;
+            max-width: 720px;
+            width: 100%;
+            box-shadow: var(--card-shadow);
+            position: relative;
+            z-index: 1;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .logo {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            box-shadow: 0 4px 12px rgba(108, 92, 231, 0.3);
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            letter-spacing: -0.5px;
+        }
+
+        h1 span {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .badge {
+            background: var(--primary);
+            color: white;
+            font-size: 0.6rem;
+            font-weight: 700;
+            padding: 2px 10px;
+            border-radius: 20px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 24px;
+            font-weight: 400;
+            padding-left: 62px;
+        }
+
+        /* Input Group */
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .input-wrapper {
+            flex: 1;
+            position: relative;
+            min-width: 150px;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            opacity: 0.5;
+            font-size: 0.9rem;
+        }
+
+        .input-wrapper input {
+            width: 100%;
+            padding: 14px 16px 14px 42px;
+            border: 2px solid #E8ECF1;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            transition: var(--transition);
+            background: #F8F9FA;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 0.5px;
+        }
+
+        .input-wrapper input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(108, 92, 231, 0.1);
+        }
+
+        .input-wrapper input::placeholder {
+            font-family: 'Inter', sans-serif;
+            letter-spacing: 0;
+            opacity: 0.6;
+        }
+
+        #accountName {
+            font-family: 'Inter', sans-serif;
+            letter-spacing: 0;
+        }
+
+        #addBtn {
+            padding: 14px 28px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 16px rgba(108, 92, 231, 0.3);
+        }
+
+        #addBtn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(108, 92, 231, 0.4);
+        }
+
+        #addBtn:active {
+            transform: translateY(0);
+        }
+
+        /* Toolbar */
+        .toolbar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+            padding: 4px 0;
+        }
+
+        .search-wrapper {
+            flex: 1;
+            position: relative;
+            min-width: 150px;
+        }
+
+        .search-wrapper i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            opacity: 0.4;
+            font-size: 0.85rem;
+        }
+
+        .search-bar {
+            width: 100%;
+            padding: 10px 16px 10px 40px;
+            border: 2px solid #E8ECF1;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            transition: var(--transition);
+            background: #F8F9FA;
+        }
+
+        .search-bar:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.08);
+        }
+
+        .toolbar-btn {
+            padding: 10px 16px;
+            background: #F8F9FA;
+            border: 2px solid #E8ECF1;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-secondary);
+        }
+
+        .toolbar-btn:hover {
+            background: white;
+            border-color: var(--primary);
+            color: var(--primary);
+            transform: translateY(-1px);
+        }
+
+        .toolbar-btn.danger {
+            color: #E74C3C;
+            border-color: #FDEAEA;
+            background: #FEF5F5;
+        }
+
+        .toolbar-btn.danger:hover {
+            background: #FDEAEA;
+            border-color: #E74C3C;
+        }
+
+        .toolbar-btn i {
+            font-size: 0.9rem;
+        }
+
+        /* Stats */
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 4px;
+            margin-bottom: 16px;
+        }
+
+        .stats .count {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .stats .count span {
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        /* Account Card */
+        .account-card {
+            background: var(--bg-card);
+            border-radius: var(--border-radius);
+            padding: 18px 20px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            animation: slideIn 0.3s ease;
+            border: 2px solid #F0F2F5;
+            transition: var(--transition);
+            gap: 12px;
+        }
+
+        .account-card:hover {
+            border-color: var(--primary-light);
+            transform: translateX(4px);
+            box-shadow: 0 4px 16px rgba(108, 92, 231, 0.08);
+        }
+
+        .account-card .info {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .account-card .account-name {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .account-card .account-name .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--secondary);
+            display: inline-block;
+            flex-shrink: 0;
+        }
+
+        .account-card .key-label {
+            font-size: 0.7rem;
+            color: #B0B5BD;
+            font-family: 'Courier New', monospace;
+            margin-top: 1px;
+        }
+
+        .account-card .otp-row {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-top: 6px;
+        }
+
+        .account-card .otp-code {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            font-family: 'Courier New', monospace;
+            letter-spacing: 4px;
+            cursor: pointer;
+            transition: var(--transition);
+            user-select: none;
+            position: relative;
+            background: linear-gradient(135deg, var(--text-primary), var(--primary-dark));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .account-card .otp-code.hidden {
+            filter: blur(6px);
+            letter-spacing: 10px;
+            -webkit-text-fill-color: var(--text-secondary);
+            background: none;
+            cursor: default;
+        }
+
+        .account-card .otp-code:hover:not(.hidden) {
+            transform: scale(1.05);
+        }
+
+        .account-card .otp-code.copied::after {
+            content: '✓ Copied!';
+            position: absolute;
+            top: -28px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.65rem;
+            font-weight: 600;
+            background: var(--text-primary);
+            color: white;
+            padding: 3px 12px;
+            border-radius: 6px;
+            white-space: nowrap;
+            font-family: 'Inter', sans-serif;
+            -webkit-text-fill-color: white;
+            animation: fadeUp 0.4s ease;
+        }
+
+        /* Countdown */
+        .countdown-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-shrink: 0;
+        }
+
+        .countdown-circle {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .countdown-circle svg {
+            transform: rotate(-90deg);
+            width: 48px;
+            height: 48px;
+        }
+
+        .countdown-circle .bg {
+            fill: none;
+            stroke: #F0F2F5;
+            stroke-width: 4;
+        }
+
+        .countdown-circle .progress {
+            fill: none;
+            stroke: var(--primary);
+            stroke-width: 4;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 0.5s ease, stroke 0.5s ease;
+        }
+
+        .countdown-circle .progress.warning {
+            stroke: #F39C12;
+        }
+
+        .countdown-circle .progress.danger {
+            stroke: #E74C3C;
+        }
+
+        .countdown-circle .time-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+        }
+
+        .countdown-circle .time-text.warning {
+            color: #F39C12;
+        }
+
+        .countdown-circle .time-text.danger {
+            color: #E74C3C;
+        }
+
+        /* Card Actions */
+        .card-actions {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .card-actions button {
+            width: 34px;
+            height: 34px;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            background: transparent;
+            color: var(--text-secondary);
+        }
+
+        .card-actions button:hover {
+            background: #F0F2F5;
+            transform: scale(1.08);
+        }
+
+        .card-actions .toggle-btn:hover {
+            background: #E8F0FE;
+            color: var(--primary);
+        }
+
+        .card-actions .delete-btn:hover {
+            background: #FDEAEA;
+            color: #E74C3C;
+        }
+
+        /* Animations */
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-12px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(4px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(-28px);
+            }
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 50px 20px;
+            color: var(--text-secondary);
+        }
+
+        .empty-state .icon {
+            font-size: 3.5rem;
+            margin-bottom: 12px;
+            opacity: 0.5;
+        }
+
+        .empty-state p {
+            margin: 4px 0;
+            font-weight: 500;
+        }
+
+        .empty-state .sub {
+            font-size: 0.85rem;
+            opacity: 0.7;
+            font-weight: 400;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: rgba(45, 52, 54, 0.95);
+            backdrop-filter: blur(12px);
+            color: white;
+            padding: 14px 28px;
+            border-radius: 14px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            opacity: 0;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: none;
+            z-index: 1000;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .toast i {
+            font-size: 1.1rem;
+        }
+
+        /* File input hidden */
+        #fileInput {
+            display: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 640px) {
+            .container {
+                padding: 20px;
+                border-radius: 20px;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 6px;
+            }
+
+            .header-left {
+                gap: 10px;
+            }
+
+            h1 {
+                font-size: 1.4rem;
+            }
+
+            .subtitle {
+                padding-left: 0;
+                font-size: 0.85rem;
+                margin-bottom: 16px;
+            }
+
+            .input-group {
+                flex-direction: column;
+            }
+
+            .input-wrapper {
+                min-width: 0;
+            }
+
+            #addBtn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .toolbar {
+                flex-direction: column;
+            }
+
+            .search-wrapper {
+                min-width: 0;
+            }
+
+            .toolbar-btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .account-card {
+                flex-wrap: wrap;
+                padding: 14px 16px;
+            }
+
+            .account-card .otp-code {
+                font-size: 1.4rem;
+                letter-spacing: 2px;
+            }
+
+            .countdown-circle {
+                width: 40px;
+                height: 40px;
+            }
+
+            .countdown-circle svg {
+                width: 40px;
+                height: 40px;
+            }
+
+            .stats {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 4px;
+            }
+
+            .card-actions button {
+                width: 30px;
+                height: 30px;
+                font-size: 0.8rem;
+            }
+
+            .toast {
+                padding: 12px 20px;
+                font-size: 0.85rem;
+                max-width: 90%;
+            }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #F0F2F5;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-light);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-left">
+                <div class="logo">🔐</div>
+                <h1>Authenticator <span>Pro</span></h1>
+            </div>
+            <span class="badge">2FA Manager</span>
+        </div>
+        <p class="subtitle">Quản lý và tạo mã xác thực hai lớp an toàn</p>
+
+        <!-- Input Group -->
+        <div class="input-group">
+            <div class="input-wrapper">
+                <i class="fas fa-key"></i>
+                <input 
+                    type="text" 
+                    id="secretKey" 
+                    placeholder="Mã khóa bí mật" 
+                    autocomplete="off"
+                    spellcheck="false"
+                />
+            </div>
+            <div class="input-wrapper">
+                <i class="fas fa-tag"></i>
+                <input 
+                    type="text" 
+                    id="accountName" 
+                    placeholder="Tên tài khoản" 
+                    maxlength="30"
+                />
+            </div>
+            <button id="addBtn">
+                <i class="fas fa-plus"></i> Thêm
+            </button>
+        </div>
+
+        <!-- Toolbar -->
+        <div class="toolbar">
+            <div class="search-wrapper">
+                <i class="fas fa-search"></i>
+                <input 
+                    type="text" 
+                    class="search-bar" 
+                    id="searchBar" 
+                    placeholder="Tìm kiếm tài khoản..."
+                />
+            </div>
+            <button class="toolbar-btn" id="exportBtn">
+                <i class="fas fa-download"></i> Export
+            </button>
+            <button class="toolbar-btn" id="importBtn">
+                <i class="fas fa-upload"></i> Import
+            </button>
+            <button class="toolbar-btn danger" id="clearAllBtn">
+                <i class="fas fa-trash-alt"></i> Xóa hết
+            </button>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats">
+            <span class="count">Tổng: <span id="totalCount">0</span> tài khoản</span>
+            <span class="count" id="visibleCount">Hiển thị: 0</span>
+        </div>
+
+        <!-- Account List -->
+        <div id="accountList">
+            <div class="empty-state">
+                <div class="icon">🔑</div>
+                <p>Chưa có mã khóa nào</p>
+                <p class="sub">Nhập mã khóa và tên ở trên để bắt đầu</p>
+            </div>
+        </div>
+
+        <div class="info-note" style="margin-top: 16px; padding: 12px 16px; background: #F0F4FF; border-radius: 12px; color: var(--text-secondary); font-size: 0.8rem; text-align: center; border: 1px solid #E8ECF1;">
+            <i class="fas fa-shield-alt" style="color: var(--primary); margin-right: 6px;"></i>
+            Dữ liệu được lưu tự động vào <strong>localStorage</strong> trên trình duyệt
+            <span style="display: inline-block; margin: 0 6px;">·</span>
+            <i class="fas fa-copy" style="color: var(--primary); margin-right: 6px;"></i>
+            Click vào mã OTP để copy
+        </div>
+    </div>
+
+    <!-- Hidden file input -->
+    <input type="file" id="fileInput" accept=".json" />
+
+    <!-- Toast -->
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle" style="color: #00CEC9;"></i>
+        <span id="toastMessage">Thông báo</span>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/otplib@10.2.3/otplib-browser.min.js"></script>
+    <script>
+        // ====================== INIT OTPLIB ======================
+        let otplib;
+        try {
+            otplib = window.otplib;
+            if (otplib && otplib.authenticator) {
+                otplib.authenticator.options = {
+                    step: 30,
+                    digits: 6,
+                };
+                console.log('✅ OTPLib loaded successfully');
+            } else {
+                throw new Error('OTPLib not found');
+            }
+        } catch (e) {
+            console.warn('⚠️ Using fallback OTP generator');
+            otplib = {
+                authenticator: {
+                    options: { step: 30, digits: 6 },
+                    generate: function(secret) {
+                        // Fallback - chỉ để demo
+                        const clean = secret.replace(/\s/g, '').toUpperCase();
+                        let hash = 0;
+                        const time = Math.floor(Date.now() / 1000 / 30);
+                        const str = clean + time;
+                        for (let i = 0; i < str.length; i++) {
+                            hash = ((hash << 5) - hash) + str.charCodeAt(i);
+                            hash = hash & hash;
+                        }
+                        return String(Math.abs(hash) % 1000000).padStart(6, '0');
+                    }
+                }
+            };
+        }
+
+        // ====================== STATE ======================
+        let accounts = [];
+        let searchQuery = '';
+
+        // DOM elements
+        const secretInput = document.getElementById('secretKey');
+        const nameInput = document.getElementById('accountName');
+        const addBtn = document.getElementById('addBtn');
+        const accountList = document.getElementById('accountList');
+        const searchBar = document.getElementById('searchBar');
+        const exportBtn = document.getElementById('exportBtn');
+        const importBtn = document.getElementById('importBtn');
+        const clearAllBtn = document.getElementById('clearAllBtn');
+        const fileInput = document.getElementById('fileInput');
+        const toast = document.getElementById('toast');
+        const toastMessage = document.getElementById('toastMessage');
+        const totalCount = document.getElementById('totalCount');
+        const visibleCount = document.getElementById('visibleCount');
+
+        // ====================== OTP FUNCTIONS ======================
+        function generateOTP(secret) {
+            try {
+                const cleanSecret = secret.replace(/\s/g, '').toUpperCase();
+                if (otplib && otplib.authenticator && typeof otplib.authenticator.generate === 'function') {
+                    return otplib.authenticator.generate(cleanSecret);
+                }
+                // Fallback
+                let hash = 0;
+                const time = Math.floor(Date.now() / 1000 / 30);
+                const str = cleanSecret + time;
+                for (let i = 0; i < str.length; i++) {
+                    hash = ((hash << 5) - hash) + str.charCodeAt(i);
+                    hash = hash & hash;
+                }
+                return String(Math.abs(hash) % 1000000).padStart(6, '0');
+            } catch (error) {
+                console.error('OTP Error:', error);
+                return '------';
+            }
+        }
+
+        function isValidSecret(secret) {
+            try {
+                const clean = secret.replace(/\s/g, '').toUpperCase();
+                return /^[A-Z2-7]+$/.test(clean) && clean.length >= 16;
+            } catch {
+                return false;
+            }
+        }
+
+        // ====================== LOCAL STORAGE ======================
+        function loadFromStorage() {
+            try {
+                const data = localStorage.getItem('authenticator_accounts');
+                if (data) {
+                    accounts = JSON.parse(data);
+                    return true;
+                }
+            } catch (e) { console.error('Load error:', e); }
+            return false;
+        }
+
+        function saveToStorage() {
+            try {
+                localStorage.setItem('authenticator_accounts', JSON.stringify(accounts));
+            } catch (e) { console.error('Save error:', e); }
+        }
+
+        // ====================== CRUD ======================
+        function addAccount(secret, name = '') {
+            const cleanSecret = secret.replace(/\s/g, '').toUpperCase();
+
+            if (!isValidSecret(cleanSecret)) {
+                showToast('❌ Mã khóa không hợp lệ!', 'error');
+                return false;
+            }
+
+            if (accounts.some(acc => acc.secret === cleanSecret)) {
+                showToast('⚠️ Mã khóa đã tồn tại!', 'warning');
+                return false;
+            }
+
+            const displayName = name.trim() || cleanSecret.slice(0, 8) + '...' + cleanSecret.slice(-4);
+
+            accounts.push({
+                secret: cleanSecret,
+                name: displayName,
+                hidden: false,
+                addedAt: Date.now()
+            });
+
+            saveToStorage();
+            renderAccounts();
+            secretInput.value = '';
+            nameInput.value = '';
+            secretInput.focus();
+            showToast(`✅ Đã thêm: ${displayName}`, 'success');
+            return true;
+        }
+
+        function deleteAccount(index) {
+            const name = accounts[index].name;
+            accounts.splice(index, 1);
+            saveToStorage();
+            renderAccounts();
+            showToast(`🗑️ Đã xóa: ${name}`, 'info');
+        }
+
+        function toggleHideAccount(index) {
+            accounts[index].hidden = !accounts[index].hidden;
+            saveToStorage();
+            renderAccounts();
+        }
+
+        function clearAllAccounts() {
+            if (accounts.length === 0) {
+                showToast('📭 Không có dữ liệu', 'info');
+                return;
+            }
+            if (confirm('⚠️ Bạn có chắc muốn xóa TẤT CẢ tài khoản?')) {
+                accounts = [];
+                saveToStorage();
+                renderAccounts();
+                showToast('🗑️ Đã xóa tất cả', 'info');
+            }
+        }
+
+        // ====================== SEARCH ======================
+        function getFilteredAccounts() {
+            if (!searchQuery) return accounts;
+            const query = searchQuery.toLowerCase().trim();
+            return accounts.filter(acc =>
+                acc.name.toLowerCase().includes(query) ||
+                acc.secret.toLowerCase().includes(query)
+            );
+        }
+
+        // ====================== COPY ======================
+        function copyOTP(otp, element) {
+            if (!otp || otp === '------' || element.classList.contains('hidden')) return;
+
+            navigator.clipboard.writeText(otp).then(() => {
+                element.classList.add('copied');
+                showToast(`📋 Đã copy: ${otp}`, 'success');
+                setTimeout(() => element.classList.remove('copied'), 1500);
+            }).catch(() => {
+                // Fallback
+                const textArea = document.createElement('textarea');
+                textArea.value = otp;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                showToast(`📋 Đã copy: ${otp}`, 'success');
+            });
+        }
+
+        // ====================== EXPORT / IMPORT ======================
+        function exportData() {
+            if (accounts.length === 0) {
+                showToast('📭 Không có dữ liệu', 'info');
+                return;
+            }
+
+            const data = accounts.map(acc => ({
+                secret: acc.secret,
+                name: acc.name
+            }));
+
+            const json = JSON.stringify(data, null, 2);
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `authenticator_${new Date().toISOString().slice(0,10)}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast(`📤 Đã xuất ${accounts.length} tài khoản`, 'success');
+        }
+
+        function importData(file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (!Array.isArray(data)) {
+                        showToast('❌ File không hợp lệ!', 'error');
+                        return;
+                    }
+
+                    let added = 0;
+                    data.forEach(item => {
+                        if (item.secret && isValidSecret(item.secret)) {
+                            const cleanSecret = item.secret.toUpperCase();
+                            if (!accounts.some(acc => acc.secret === cleanSecret)) {
+                                const name = item.name || cleanSecret.slice(0, 8) + '...' + cleanSecret.slice(-4);
+                                accounts.push({
+                                    secret: cleanSecret,
+                                    name: name,
+                                    hidden: false,
+                                    addedAt: Date.now()
+                                });
+                                added++;
+                            }
+                        }
+                    });
+
+                    if (added > 0) {
+                        saveToStorage();
+                        renderAccounts();
+                        showToast(`✅ Đã import ${added} tài khoản mới`, 'success');
+                    } else {
+                        showToast('⚠️ Không có tài khoản mới', 'warning');
+                    }
+                } catch (error) {
+                    showToast('❌ Lỗi đọc file: ' + error.message, 'error');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // ====================== RENDER ======================
+        function renderAccounts() {
+            const filtered = getFilteredAccounts();
+
+            // Update stats
+            totalCount.textContent = accounts.length;
+            visibleCount.textContent = `Hiển thị: ${filtered.length}`;
+
+            if (filtered.length === 0) {
+                const message = accounts.length === 0 ? 'Chưa có mã khóa nào' : 'Không tìm thấy kết quả';
+                accountList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon">${accounts.length === 0 ? '🔑' : '🔍'}</div>
+                        <p>${message}</p>
+                        <p class="sub">${accounts.length === 0 ? 'Nhập mã khóa ở trên để bắt đầu' : 'Thử tìm kiếm khác'}</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            const now = Date.now();
+
+            filtered.forEach((account, displayIndex) => {
+                const realIndex = accounts.indexOf(account);
+                const otp = generateOTP(account.secret);
+                const timeRemaining = 30 - Math.floor((now / 1000) % 30);
+                const progress = (timeRemaining / 30) * 100;
+                const isWarning = timeRemaining <= 10;
+                const isDanger = timeRemaining <= 5;
+
+                let progressColor = '#6C5CE7';
+                let timeClass = '';
+                if (isDanger) {
+                    progressColor = '#E74C3C';
+                    timeClass = 'danger';
+                } else if (isWarning) {
+                    progressColor = '#F39C12';
+                    timeClass = 'warning';
+                }
+
+                const displayOTP = account.hidden ? '••••••' : otp;
+                const hiddenClass = account.hidden ? 'hidden' : '';
+                const otpToCopy = account.hidden ? '' : otp;
+
+                html += `
+                    <div class="account-card" data-index="${realIndex}">
+                        <div class="info">
+                            <div class="account-name">
+                                <span class="dot"></span>
+                                ${escapeHtml(account.name)}
+                            </div>
+                            <div class="key-label">${account.secret.slice(0, 8)}...${account.secret.slice(-4)}</div>
+                            <div class="otp-row">
+                                <span class="otp-code ${hiddenClass}" onclick="copyOTP('${otpToCopy}', this)">
+                                    ${displayOTP}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="countdown-wrapper">
+                            <div class="countdown-circle">
+                                <svg viewBox="0 0 48 48">
+                                    <circle class="bg" cx="24" cy="24" r="20" />
+                                    <circle class="progress ${timeClass}" cx="24" cy="24" r="20"
+                                        stroke-dasharray="${2 * Math.PI * 20}"
+                                        stroke-dashoffset="${(1 - progress/100) * 2 * Math.PI * 20}"
+                                        style="stroke: ${progressColor}" />
+                                </svg>
+                                <span class="time-text ${timeClass}">${timeRemaining}s</span>
+                            </div>
+                            <div class="card-actions">
+                                <button class="toggle-btn" onclick="toggleHideAccount(${realIndex})" title="${account.hidden ? 'Hiện mã' : 'Ẩn mã'}">
+                                    <i class="fas ${account.hidden ? 'fa-eye' : 'fa-eye-slash'}"></i>
+                                </button>
+                                <button class="delete-btn" onclick="deleteAccount(${realIndex})" title="Xóa">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            accountList.innerHTML = html;
+        }
+
+        // ====================== UTILITY ======================
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        let toastTimeout;
+
+        function showToast(message, type = 'info') {
+            const icons = {
+                success: 'fa-check-circle',
+                error: 'fa-exclamation-circle',
+                warning: 'fa-exclamation-triangle',
+                info: 'fa-info-circle'
+            };
+            const colors = {
+                success: '#00CEC9',
+                error: '#E74C3C',
+                warning: '#F39C12',
+                info: '#6C5CE7'
+            };
+
+            const icon = document.querySelector('.toast i');
+            icon.className = `fas ${icons[type] || icons.info}`;
+            icon.style.color = colors[type] || colors.info;
+            toastMessage.textContent = message;
+
+            toast.classList.add('show');
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2800);
+        }
+
+        // ====================== EVENT LISTENERS ======================
+        addBtn.addEventListener('click', () => {
+            const secret = secretInput.value.trim();
+            const name = nameInput.value.trim();
+            if (secret) {
+                addAccount(secret, name);
+            } else {
+                showToast('⚠️ Vui lòng nhập mã khóa!', 'warning');
+            }
+        });
+
+        secretInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') addBtn.click();
+        });
+        nameInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') addBtn.click();
+        });
+
+        secretInput.addEventListener('input', () => {
+            secretInput.value = secretInput.value.replace(/\s/g, '').toUpperCase();
+        });
+
+        searchBar.addEventListener('input', (e) => {
+            searchQuery = e.target.value;
+            renderAccounts();
+        });
+
+        exportBtn.addEventListener('click', exportData);
+        importBtn.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                importData(e.target.files[0]);
+                fileInput.value = '';
+            }
+        });
+        clearAllBtn.addEventListener('click', clearAllAccounts);
+
+        // ====================== AUTO UPDATE ======================
+        setInterval(renderAccounts, 1000);
+
+        // ====================== INIT ======================
+        if (!loadFromStorage()) {
+            // Demo data
+            const demos = [
+                { secret: 'VEMJ7EMTK5BLETMB', name: 'Google Account' },
+                { secret: 'JBSWY3DPEHPK3PXP', name: 'GitHub Profile' }
+            ];
+            demos.forEach(item => {
+                if (isValidSecret(item.secret)) {
+                    accounts.push({
+                        secret: item.secret.toUpperCase(),
+                        name: item.name,
+                        hidden: false,
+                        addedAt: Date.now()
+                    });
+                }
+            });
+            saveToStorage();
+        }
+
+        renderAccounts();
+        console.log('✅ Authenticator Pro ready!');
+        console.log(`📊 ${accounts.length} accounts loaded`);
+    </script>
+</body>
+</html>
