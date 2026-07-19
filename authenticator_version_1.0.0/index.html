@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Authenticator - Mã OTP</title>
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 Authenticator</h1>
+        <p class="subtitle">Nhập mã khóa (Secret Key) để tạo mã xác thực</p>
+
+        <!-- Input Section -->
+        <div class="input-group">
+            <input 
+                type="text" 
+                id="secretKey" 
+                placeholder="Ví dụ: VEMJ7EMTK5BLETMB" 
+                autocomplete="off"
+                spellcheck="false"
+            />
+            <button id="addBtn">➕ Thêm</button>
+        </div>
+
+        <!-- Account List -->
+        <div id="accountList">
+            <!-- Danh sách tài khoản sẽ được thêm vào đây -->
+        </div>
+
+        <!-- Info Note -->
+        <div class="info-note">
+            ⚠️ Mã khóa chỉ được lưu tạm trong bộ nhớ, <strong>không</strong> được lưu vào bất kỳ đâu.
+        </div>
+    </div>
+
+    <!-- Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/otplib@10.2.3/otplib-browser.min.js"></script>
+    
+    <!-- JavaScript Modules -->
+    <script src="js/config.js"></script>
+    <script src="js/otp-manager.js"></script>
+    <script src="js/ui-renderer.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
